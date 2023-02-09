@@ -1,17 +1,13 @@
-const express = require('express');
 const mysql = require('mysql2');
-const inquirer = require('inquirer');
 const showTable = require('console.table');
-const PORT = process.env.PORT || 3001;
-const app = express();
+const inquirer = require('inquirer')
 
 
-app.use(express.urlencoded({extended: false}));
-app.use(express.json);
+
 
 const db = mysql.createConnection(
     {
-        host: 'localhost',
+        host: '127.0.0.1',
         user: 'root',
         password: '',
         database: 'employee_db'
@@ -19,10 +15,43 @@ const db = mysql.createConnection(
     console.log('connected to employee_db')
 );
 
-const menu = () => {
-    inquirer.prompt(
-        {
-            
-        }
-    )
-}
+const menu = [
+    {
+        type:'list',
+        name: 'menu',
+        message: 'What would you like to do???',
+        choices: [
+            "View All Employees",
+            "View All Roles",
+            "View All Departments",
+          ],
+    }
+]
+    
+
+//showing the tables 
+//TODO add code to show deparment table when "View All departments" is chosen 
+inquirer.prompt(menu).then(({menu}) => {
+    switch(menu){
+        case "View All Departments":
+            db.query('SELECT * FROM department', (err, data) => {
+                if (err) throw err;
+                console.table(data)
+            });
+            break;
+        case "View All Roles":
+            db.query('SELECT * FROM role',(err, data) => {
+                if (err) throw err;  
+                console.table(data)
+            });
+            break;
+        case "View All Employees":
+            db.query('SELECT * FROM employee', (err, data) => {
+                if (err) throw err;
+                console.table(data)
+            });
+            break;
+    }
+})
+
+
